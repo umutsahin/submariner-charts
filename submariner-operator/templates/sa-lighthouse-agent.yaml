@@ -1,0 +1,98 @@
+{{ if .Values.serviceAccounts.lighthouseAgent.create }}
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ template "submariner.lighthouseAgentServiceAccountName" . }}
+{{ if .Values.rbac.create }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: {{ template "submariner.lighthouseAgentServiceAccountName" . }}
+rules:
+  - apiGroups:
+      - ""
+    resources:
+      - services
+      - namespaces
+      - endpoints
+    verbs:
+      - get
+      - list
+      - watch
+      - update
+  - apiGroups:
+      - discovery.k8s.io
+    resources:
+      - endpointslices
+      - endpointslices/restricted
+    verbs:
+      - create
+      - get
+      - list
+      - watch
+      - update
+      - delete
+      - deletecollection
+  - apiGroups:
+      - submariner.io
+    resources:
+      - gateways
+      - globalingressips
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - multicluster.x-k8s.io
+    resources:
+      - '*'
+    verbs:
+      - create
+      - get
+      - list
+      - watch
+      - update
+      - delete
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: {{ template "submariner.lighthouseAgentServiceAccountName" . }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: {{ template "submariner.lighthouseAgentServiceAccountName" . }}
+subjects:
+  - kind: ServiceAccount
+    name: {{ template "submariner.lighthouseAgentServiceAccountName" . }}
+    namespace: {{ .Release.Namespace }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: ocp-{{ template "submariner.lighthouseAgentServiceAccountName" . }}
+rules:
+  - apiGroups:
+      - security.openshift.io
+    resourceNames:
+      - privileged
+    resources:
+      - securitycontextconstraints
+    verbs:
+      - use
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: ocp-{{ template "submariner.lighthouseAgentServiceAccountName" . }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: ocp-{{ template "submariner.lighthouseAgentServiceAccountName" . }}
+subjects:
+  - kind: ServiceAccount
+    name: {{ template "submariner.lighthouseAgentServiceAccountName" . }}
+    namespace: {{ .Release.Namespace }}
+{{ end }}
+{{ end }}

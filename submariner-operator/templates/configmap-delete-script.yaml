@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: submariner-delete-script
+data:
+  delete-script.sh: |
+    #!/bin/bash
+    echo "Deleting submariner..."
+    kubectl -n {{ .Release.Namespace }} delete submariner submariner

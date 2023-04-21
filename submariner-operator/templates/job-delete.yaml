@@ -1,0 +1,28 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: submariner-delete
+  annotations:
+    "helm.sh/hook": pre-delete
+spec:
+  ttlSecondsAfterFinished: 0
+  backoffLimit: 6
+  template:
+    spec:
+      serviceAccountName: {{ template "submariner.operatorServiceAccountName" . }}
+      containers:
+        - name: default
+          image: "{{ .Values.cleanup.image.repository }}:{{ .Values.cleanup.image.tag }}"
+          imagePullPolicy: {{ .Values.cleanup.image.pullPolicy }}
+          command:
+            - bash
+            - /scripts/delete-script.sh
+          volumeMounts:
+            - name: scripts-volume
+              mountPath: /scripts
+      volumes:
+        - name: scripts-volume
+          configMap:
+            name: submariner-delete-script
+            defaultMode: 0777
+      restartPolicy: Never

@@ -36,7 +36,7 @@ Create the name of the submariner-operator service account to use
 */}}
 {{- define "submariner.operatorServiceAccountName" -}}
 {{- if .Values.serviceAccounts.operator.create -}}
-    {{ default (printf "%s" (include "submariner.fullname" .)) .Values.serviceAccounts.operator.name }}
+    {{ default "submariner-operator" .Values.serviceAccounts.operator.name }}
 {{- else -}}
     {{ default "default" .Values.serviceAccounts.operator.name }}
 {{- end -}}
@@ -97,9 +97,30 @@ Create the name of the submariner-lighthouse-coredns service account to use
 {{- end -}}
 {{- end -}}
 
+{{- define "submariner.networkPluginSyncerServiceAccountName" -}}
+{{- if .Values.serviceAccounts.networkPluginSyncer.create -}}
+    {{ default "submariner-networkplugin-syncer" .Values.serviceAccounts.networkPluginSyncer.name }}
+{{- else -}}
+    {{ default "default" .Values.serviceAccounts.networkPluginSyncer.name }}
+{{- end -}}
+{{- end -}}
+
+{{- define "submariner.diagnoseServiceAccountName" -}}
+{{- if .Values.serviceAccounts.diagnose.create -}}
+    {{ default "submariner-diagnose" .Values.serviceAccounts.diagnose.name }}
+{{- else -}}
+    {{ default "default" .Values.serviceAccounts.diagnose.name }}
+{{- end -}}
+{{- end -}}
+
 {{/*
 Create the name of the submariner-lighthouse-coredns service name to use
 */}}
 {{- define "submariner.lighthouseDnsName" -}}
 {{- default (printf "%s-lighthouse-coredns" (include "submariner.fullname" .)) .Values.lighthouseCoredns.name }}
+{{- end -}}
+
+
+{{- define "submariner.namespace" -}}
+{{- default .Release.Namespace .Values.namespace }}
 {{- end -}}
