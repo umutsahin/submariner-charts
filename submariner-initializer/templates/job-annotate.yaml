@@ -1,0 +1,26 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: submariner-annotate
+spec:
+  ttlSecondsAfterFinished: 500
+  backoffLimit: 6
+  template:
+    spec:
+      serviceAccountName: submariner-initializer
+      containers:
+        - name: default
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command:
+            - bash
+            - /scripts/annotate-script.sh
+          volumeMounts:
+            - name: scripts-volume
+              mountPath: /scripts
+      volumes:
+        - name: scripts-volume
+          configMap:
+            name: submariner-initializer-annotate-script
+            defaultMode: 0777
+      restartPolicy: Never
