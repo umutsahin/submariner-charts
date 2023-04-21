@@ -1,4 +1,3 @@
----
 submariner:
   clusterId: ""
   token: ""
@@ -63,3 +62,14 @@ serviceAccounts:
   lighthouseCoreDns:
     create: true
     name: ""
+  networkPluginSyncer:
+    create: true
+    name: ""
+  diagnose:
+    create: true
+    name: ""
+cleanup:
+  image:
+    repository: bitnami/kubectl
+    tag: 1.24.12
+    pullPolicy: IfNotPresent
