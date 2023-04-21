@@ -1,0 +1,14 @@
+# TO CLEANUP -> on all nodes
+iptables --flush SUBMARINER-INPUT
+iptables -D INPUT $(iptables -L INPUT --line-numbers | grep SUBMARINER-INPUT | awk '{print $1}')
+iptables --delete-chain SUBMARINER-INPUT
+
+iptables -t nat --flush SUBMARINER-POSTROUTING
+iptables -t nat -D POSTROUTING $(iptables -t nat -L POSTROUTING --line-numbers | grep SUBMARINER-POSTROUTING | awk '{print $1}')
+iptables -t nat --delete-chain SUBMARINER-POSTROUTING
+
+iptables -t mangle --flush SUBMARINER-POSTROUTING
+iptables -t mangle -D POSTROUTING $(iptables -t mangle -L POSTROUTING --line-numbers | grep SUBMARINER-POSTROUTING | awk '{print $1}')
+iptables -t mangle --delete-chain SUBMARINER-POSTROUTING
+
+ip link delete vx-submariner

@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: submariner-initializer-cleanup-script
+data:
+  cleanup-script.sh: |
+    #!/bin/bash
+    echo "Removing annotations..."
+    kubectl annotate --all node gateway.submariner.io/public-ip=dns- --overwrite
+    echo "Removing gateway label..."
+    kubectl label --all node submariner.io/gateway- --overwrite
+    echo "Removing dns entry..."
+    kubectl apply -f -  <<EOF
+    apiVersion: operator.openshift.io/v1
+    kind: DNS
+    metadata:
+      finalizers:
+      - dns.operator.openshift.io/dns-controller
+      name: default
+    spec:
+      servers: []
+    EOF
+    echo "Cleaning clusterroles..."
+    roles="ocp-submariner-diagnose ocp-submariner-gateway ocp-submariner-globalnet ocp-submariner-lighthouse ocp-submariner-lighthouse ocp-submariner-networkplugin ocp-submariner-operator ocp-submariner-routeagent"
+    kubectl delete clusterrole,clusterrolebinding $roles --ignore-not-found
+    echo "Done !"

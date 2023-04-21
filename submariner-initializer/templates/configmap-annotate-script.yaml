@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: submariner-initializer-annotate-script
+data:
+  annotate-script.sh: |
+    #!/bin/bash
+    echo "Annotating nodes..."
+    kubectl get node|grep worker|tr -s ' ' ':'|cut -d':' -f1|while read node;
+    do
+      echo $node;
+      kubectl annotate node $node gateway.submariner.io/public-ip=dns:$node --overwrite;
+    done
+    GATEWAY=$(kubectl get node|grep worker|tr -s ' ' ':'|cut -d':' -f1|head -1)
+    echo "Marking $GATEWAY as gateway..."
+    kubectl label nodes $GATEWAY 'submariner.io/gateway=true' --overwrite

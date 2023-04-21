@@ -1,0 +1,4 @@
+image:
+  repository: bitnami/kubectl
+  tag: 1.24.12
+  pullPolicy: IfNotPresent
