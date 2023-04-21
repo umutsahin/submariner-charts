@@ -36,8 +36,15 @@ Create the name of the submariner-client service account to use
 */}}
 {{- define "submariner-k8s-broker.clientServiceAccountName" -}}
 {{- if .Values.serviceAccounts.client.create -}}
-    {{ default (printf "%s-client" (include "submariner-k8s-broker.fullname" .)) .Values.serviceAccounts.client.name }}
+    {{ default "submariner-k8s-broker-client" .Values.serviceAccounts.client.name }}
 {{- else -}}
     {{ default "default" .Values.serviceAccounts.client.name }}
+{{- end -}}
+{{- end -}}
+{{- define "submariner-k8s-broker.adminServiceAccountName" -}}
+{{- if .Values.serviceAccounts.admin.create -}}
+    {{ default "submariner-k8s-broker-admin" .Values.serviceAccounts.admin.name }}
+{{- else -}}
+    {{ default "default" .Values.serviceAccounts.admin.name }}
 {{- end -}}
 {{- end -}}
